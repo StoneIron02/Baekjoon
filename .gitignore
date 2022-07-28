@@ -32,3 +32,5 @@
 *.app
 /.vs/Baekjoon/v17
 /Baekjoon
+/.vs/Baekjoon/FileContentIndex
+/x64/Debug
