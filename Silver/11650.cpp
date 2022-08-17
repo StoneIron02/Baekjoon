@@ -2,28 +2,46 @@
 #include <vector>
 using namespace std;
 
+struct position {
+	int x;
+	int y;
+	position(int x, int y) : x(x), y(y) {
+	}
+	bool isSmallerThan(position* p) {
+		if (x == p->x)
+			return (y < p->y);
+		else
+			return (x < p->x);
+	}
+	friend ostream& operator<<(ostream& out, position* p) {
+		out << p->x << " " << p->y;
+		return out;
+	}
+};
+
+template <typename T>
 class PQ {
 public:
-	PQ() {
-		arr.push_back(0);
+	PQ<T>() {
+		arr.push_back(NULL);
 	}
-	void insert(int x) {
-		arr.push_back(x);
+	void insert(T data) {
+		arr.push_back(data);
 		upHeap(arr.size() - 1);
 	}
-	int removeMin() {
-		int result = arr[1];
+	T removeMin() {
+		T result = arr[1];
 		arr[1] = arr[arr.size() - 1];
 		arr.pop_back();
 		downHeap(1);
 		return result;
 	}
 private:
-	vector<int> arr;
+	vector<T> arr;
 	void upHeap(int curIndex) {
-		int parentIndex = curIndex / 2;
 		if (curIndex == 1) return;
-		if (arr[parentIndex] > arr[curIndex]) {
+		int parentIndex = curIndex / 2;
+		if (arr[curIndex]->isSmallerThan(arr[parentIndex])) {
 			arr[0] = arr[curIndex];
 			arr[curIndex] = arr[parentIndex];
 			arr[parentIndex] = arr[0];
@@ -41,13 +59,13 @@ private:
 			childIndex = leftIndex;
 		}
 		else {
-			if (arr[leftIndex] < arr[rightIndex])
+			if (arr[leftIndex]->isSmallerThan(arr[rightIndex]))
 				childIndex = leftIndex;
 			else
 				childIndex = rightIndex;
 		}
 
-		if (arr[childIndex] < arr[curIndex]) {
+		if (arr[childIndex]->isSmallerThan(arr[curIndex])) {
 			arr[0] = arr[curIndex];
 			arr[curIndex] = arr[childIndex];
 			arr[childIndex] = arr[0];
@@ -59,13 +77,14 @@ private:
 int main() {
 	int n;
 	cin >> n;
-	PQ pq = PQ();
+	PQ<position*> pq = PQ<position*>();
 	for (int i = 0; i < n; i++) {
-		int num;
-		cin >> num;
-		pq.insert(num);
+		int x, y;
+		cin >> x >> y;
+		pq.insert(new position(x, y));
 	}
+
 	for (int i = 0; i < n; i++) {
-		cout << pq.removeMin() << endl;
+		cout << pq.removeMin() << "\n";
 	}
 }
