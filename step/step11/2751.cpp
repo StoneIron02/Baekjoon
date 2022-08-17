@@ -1,26 +1,25 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class PQ {
 public:
-	PQ(int n) {
-		arr = new int[n];
-		arr[size++] = 0;
+	PQ() {
+		arr.push_back(0);
 	}
 	void insert(int x) {
-		arr[size++] = x;
-		upHeap(size - 1);
+		arr.push_back(x);
+		upHeap(arr.size() - 1);
 	}
 	int removeMin() {
 		int result = arr[1];
-		arr[1] = arr[size - 1];
-		size--;
+		arr[1] = arr[arr.size() - 1];
+		arr.pop_back();
 		downHeap(1);
 		return result;
 	}
 private:
-	int* arr;
-	int size = 0;
+	vector<int> arr;
 	void upHeap(int curIndex) {
 		int parentIndex = curIndex / 2;
 		if (curIndex == 1) return;
@@ -35,10 +34,10 @@ private:
 		int leftIndex = curIndex * 2;
 		int rightIndex = curIndex * 2 + 1;
 		int childIndex;
-		if (size - 1 < leftIndex) {
+		if (arr.size() - 1 < leftIndex) {
 			return;
 		}
-		else if (size - 1 == leftIndex) {
+		else if (arr.size() - 1 == leftIndex) {
 			childIndex = leftIndex;
 		}
 		else {
@@ -60,7 +59,7 @@ private:
 int main() {
 	int n;
 	cin >> n;
-	PQ pq = PQ(n);
+	PQ pq = PQ();
 	for (int i = 0; i < n; i++) {
 		int num;
 		cin >> num;
