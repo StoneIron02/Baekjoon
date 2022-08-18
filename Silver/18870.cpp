@@ -3,20 +3,16 @@
 #include <string>
 using namespace std;
 
-struct user {
-	int no;
-	int age;
-	string name;
-	user(int no, int age, string name) : no(no), age(age), name(name) {
+struct pos {
+	int xOriginal;
+	int xChange;
+	pos(int xOriginal) : xOriginal(xOriginal) {
 	}
-	bool isSmallerThan(user* p) {
-		if (age == p->age)
-			return (no < p->no);
-		else
-			return (age < p->age);
+	bool isSmallerThan(pos* p) {
+		return (xOriginal < p->xOriginal);
 	}
-	friend ostream& operator<<(ostream& out, user* p) {
-		out << p->age << " " << p->name;
+	friend ostream& operator<<(ostream& out, pos* p) {
+		out << p->xChange;
 		return out;
 	}
 };
@@ -79,15 +75,27 @@ private:
 int main() {
 	int n;
 	cin >> n;
-	PQ<user*> pq = PQ<user*>();
+	PQ<pos*> pq = PQ<pos*>();
+	vector<pos*> list;
 	for (int i = 0; i < n; i++) {
-		int age;
-		string name;
-		cin >> age >> name;
-		pq.insert(new user(n, age, name));
+		int num;
+		cin >> num;
+		pos* p = new pos(num);
+		list.push_back(p);
+		pq.insert(p);
+	}
+
+	int count = -1;
+	int prev = -1000000001;
+	for (int i = 0; i < n; i++) {
+		pos* p = pq.removeMin();
+		if (prev < p->xOriginal)
+			count++;
+		p->xChange = count;
+		prev = p->xOriginal;
 	}
 
 	for (int i = 0; i < n; i++) {
-		cout << pq.removeMin() << "\n";
+		cout << list[i] << " ";
 	}
 }
