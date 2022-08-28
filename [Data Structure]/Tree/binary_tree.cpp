@@ -22,6 +22,9 @@ public:
 	binary_tree(T data) : root(new node<T>(data, nullptr)) {
 		nodes.push_back(root);
 	}
+	~binary_tree() {
+		delete root;
+	}
 	int size() {
 		return nodes.size();
 	}
@@ -129,8 +132,4 @@ void inOrder(binary_tree<T>& tree, node<T>* node) {
 	inOrder(tree, node->left);
 	cout << node->data << " ";
 	inOrder(tree, node->right);
-}
-
-int main() {
-
 }

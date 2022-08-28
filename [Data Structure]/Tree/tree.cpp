@@ -21,6 +21,9 @@ public:
 	tree(T data) : root(new node<T>(data, nullptr)) {
 		nodes.push_back(root);
 	}
+	~tree() {
+		delete root;
+	}
 	int size() {
 		return nodes.size();
 	}

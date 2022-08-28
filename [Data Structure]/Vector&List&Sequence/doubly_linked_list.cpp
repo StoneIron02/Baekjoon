@@ -21,6 +21,10 @@ public:
 		header->next = trailer;
 		trailer->prev = header;
 	}
+	~doubly_linked_list() {
+		delete header;
+		delete trailer;
+	}
 	int size() {
 		return n;
 	}

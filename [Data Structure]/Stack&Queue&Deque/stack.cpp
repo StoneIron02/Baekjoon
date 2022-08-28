@@ -7,7 +7,7 @@ using namespace std;
 template <typename T>
 class stack {
 public:
-	stack<T>() : n(0) {
+	stack() : n(0) {
 	}
 	int size() {
 		return n;

@@ -19,6 +19,10 @@ class singly_linked_list {
 public:
 	singly_linked_list() : head(nullptr), tail(nullptr), n(0) {
 	}
+	~singly_linked_list() {
+		delete head;
+		delete tail;
+	}
 	int size() {
 		return n;
 	}

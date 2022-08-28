@@ -8,6 +8,9 @@ class vector {
 public:
 	vector() : n(0), capacity(1), arr(new T[capacity]) {
 	}
+	~vector() {
+		delete[] arr;
+	}
 	T operator[](int index) {
 		return arr[index];
 	}
