@@ -17,8 +17,7 @@ struct node {
 template <typename T>
 class list { // = Sequence
 public:
-	list() : n(0) {
-		header = trailer = new node<T>(NULL);
+	list() : n(0), header(new node<T>(NULL)), trailer(new node<T>(NULL)) {
 		header->next = trailer;
 		trailer->prev = header;
 	}

@@ -6,14 +6,7 @@ using namespace std;
 template <typename T>
 class vector {
 public:
-	vector() {
-		capacity = 1;
-		arr = new T[capacity];
-		n = 0;
-	}
-	vector(int capacity) : capacity(capacity) {
-		arr = new T[capacity];
-		n = 0;
+	vector() : n(0), capacity(1), arr(new T[capacity]) {
 	}
 	T operator[](int index) {
 		return arr[index];

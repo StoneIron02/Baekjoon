@@ -7,14 +7,7 @@ using namespace std;
 template <typename T>
 class queue {
 public:
-	queue() {
-		f = r = 0;
-		n = 0;
-	}
-	queue(int capacity) {
-		arr.resize(capacity);
-		f = r = 0;
-		n = 0;
+	queue() : n(0), f(0), r(0) {
 	}
 	int size() {
 		return n;

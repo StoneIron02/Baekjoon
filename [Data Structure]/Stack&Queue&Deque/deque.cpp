@@ -7,14 +7,7 @@ using namespace std;
 template <typename T>
 class deque {
 public:
-	deque() {
-		f = r = 0;
-		n = 0;
-	}
-	deque(int capacity) {
-		arr.resize(capacity);
-		f = r = 0;
-		n = 0;
+	deque() : n(0), f(0), r(0) {
 	}
 	int size() {
 		return n;

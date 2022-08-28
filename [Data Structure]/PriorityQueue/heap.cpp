@@ -7,17 +7,10 @@ using namespace std;
 template <typename T>
 class priority_queue {
 public:
-	priority_queue() {
-		isMinHeap = true;
+	priority_queue() : isMinHeap(true) {
 		arr.push_back(NULL);
 	}
-	priority_queue(int capacity) {
-		isMinHeap = true;
-		arr.resize(capacity);
-		arr.push_back(NULL);
-	}
-	priority_queue(int capacity, bool isMinHeap) : isMinHeap(isMinHeap) {
-		arr.resize(capacity);
+	priority_queue(bool isMinHeap) : isMinHeap(isMinHeap) {
 		arr.push_back(NULL);
 	}
 	int size() {
@@ -31,7 +24,7 @@ public:
 		upHeap(size());
 	}
 	T pop() {
-		if (size() == 0) {
+		if (empty()) {
 			// QueueEmpty
 			return NULL;
 		}
@@ -42,7 +35,7 @@ public:
 		return result;
 	}
 	T top() {
-		if (size() == 0) {
+		if (empty()) {
 			// QueueEmpty
 			return NULL;
 		}
