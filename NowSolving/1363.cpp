@@ -12,27 +12,28 @@ struct node {
 	node<T>* parent;
 	node<T>* left;
 	node<T>* right;
-	int size;
-	node() : key(NULL), parent(nullptr), left(nullptr), right(nullptr), size(0) {
+	node() : key(NULL), parent(nullptr), left(nullptr), right(nullptr) {
 		color = BLACK;
 	}
-	node(T key) : key(key), parent(nullptr), left(nullptr), right(nullptr), size(1) {
+	node(T key) : key(key), parent(nullptr), left(nullptr), right(nullptr) {
 		color = RED;
 	}
-	node(T key, node<T>* nil) : key(key), parent(nil), left(nil), right(nil), size(1) {
+	node(T key, node<T>* nil) : key(key), parent(nil), left(nil), right(nil) {
 		color = RED;
 	}
 };
 
+long long cnt = 0;
+
 template <typename T>
-class order_statistic_tree {
+class red_black_tree {
 public:
-	order_statistic_tree() : nil(new node<T>()), root(nil), n(0) {
+	red_black_tree() : nil(new node<T>()), root(nil), n(0) {
 	}
-	order_statistic_tree(T key) : nil(new node<T>()), root(new node<T>(key, nil)), n(1) {
+	red_black_tree(T key) : nil(new node<T>()), root(new node<T>(key, nil)), n(1) {
 		root->color = BLACK;
 	}
-	~order_statistic_tree() {
+	~red_black_tree() {
 		delete nil;
 		delete root;
 	}
@@ -46,7 +47,10 @@ public:
 		return root;
 	}
 	node<T>* search(node<T>* curNode, T key) {
-		while (curNode != nil && key != curNode->key) {
+		while (curNode != nil) {
+			cnt++;
+			if (key == curNode->key)
+				break;
 			if (key < curNode->key)
 				curNode = curNode->left;
 			else
@@ -93,7 +97,6 @@ public:
 		node<T>* parentNode = nil; // parentNode
 		node<T>* curNode = root;
 		while (curNode != nil) {
-			curNode->size++;
 			parentNode = curNode;
 			if (newNode->key < curNode->key)
 				curNode = curNode->left;
@@ -147,32 +150,8 @@ public:
 		}
 		delete deleteNode;
 		n--;
-		node<T>* curNode = fixupNode;
-		while (curNode != nil) {
-			curNode->size--;
-			curNode = curNode->parent;
-		}
 		if (successor_original_color)
 			deleteFixup(fixupNode);
-	}
-	node<T>* select(node<T>* curNode, int i) {
-		int r = curNode->left->size + 1;
-		if (i == r)
-			return curNode;
-		else if (i < r)
-			return select(curNode->left, i);
-		else
-			return select(curNode->right, i - r);
-	}
-	int rank(node<T>* findNode) {
-		int r = findNode->left->size + 1;
-		node<T>* curNode = findNode;
-		while (curNode != root) {
-			if (curNode == curNode->parent->right)
-				r = r + curNode->parent->left->size + 1;
-			curNode = curNode->parent;
-		}
-		return r;
 	}
 private:
 	node<T>* nil;
@@ -192,8 +171,6 @@ private:
 			x->parent->right = y;
 		y->left = x;
 		x->parent = y;
-		y->size = x->size;
-		x->size = x->left->size + x->right->size + 1;
 	}
 	void rotateRight(node<T>* x) {
 		node<T>* y = x->left;
@@ -209,8 +186,6 @@ private:
 			x->parent->right = y;
 		y->right = x;
 		x->parent = y;
-		y->size = x->size;
-		x->size = x->left->size + x->right->size + 1;
 	}
 	void transplant(node<T>* u, node<T>* v) {
 		if (u->parent == nil)
@@ -323,7 +298,7 @@ private:
 };
 
 template <typename T>
-void inOrder(order_statistic_tree<T>& tree, node<T>* node) {
+void inOrder(red_black_tree<T>& tree, node<T>* node) {
 	if (node == nullptr) return;
 	inOrder(tree, node->left);
 	cout << node->data << " ";
@@ -331,5 +306,18 @@ void inOrder(order_statistic_tree<T>& tree, node<T>* node) {
 }
 
 int main() {
-
+	int n;
+	cin >> n;
+	int k;
+	cin >> k;
+	red_black_tree<int> rbt;
+	for (int i = 0; i < k; i++) {
+		int num;
+		cin >> num;
+		rbt.insert(num);
+	}
+	for (int i = 1; i <= n; i++) {
+		rbt.search(rbt.getRoot(), i);
+	}
+	cout << cnt;
 }
