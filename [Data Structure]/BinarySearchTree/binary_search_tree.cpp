@@ -29,6 +29,9 @@ public:
 	bool empty() {
 		return (size() == 0);
 	}
+	node<T>* getRoot() {
+		return root;
+	}
 	node<T>* search(node<T>* curNode, T key) {
 		while (curNode != nullptr && key != curNode->key) {
 			if (key < curNode->key)

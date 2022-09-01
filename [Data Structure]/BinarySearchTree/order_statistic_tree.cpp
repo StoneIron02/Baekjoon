@@ -12,13 +12,14 @@ struct node {
 	node<T>* parent;
 	node<T>* left;
 	node<T>* right;
-	node() : key(NULL), parent(nullptr), left(nullptr), right(nullptr) {
+	int size;
+	node() : key(NULL), parent(nullptr), left(nullptr), right(nullptr), size(0) {
 		color = BLACK;
 	}
-	node(T key) : key(key), parent(nullptr), left(nullptr), right(nullptr) {
+	node(T key) : key(key), parent(nullptr), left(nullptr), right(nullptr), size(1) {
 		color = RED;
 	}
-	node(T key, node<T>* nil) : key(key), parent(nil), left(nil), right(nil) {
+	node(T key, node<T>* nil) : key(key), parent(nil), left(nil), right(nil), size(1) {
 		color = RED;
 	}
 };
@@ -92,6 +93,7 @@ public:
 		node<T>* parentNode = nil; // parentNode
 		node<T>* curNode = root;
 		while (curNode != nil) {
+			curNode->size++;
 			parentNode = curNode;
 			if (newNode->key < curNode->key)
 				curNode = curNode->left;
@@ -145,8 +147,32 @@ public:
 		}
 		delete deleteNode;
 		n--;
+		node<T>* curNode = fixupNode;
+		while (curNode != nil) {
+			curNode->size--;
+			curNode = curNode->parent;
+		}
 		if (successor_original_color)
 			deleteFixup(fixupNode);
+	}
+	node<T>* select(node<T>* curNode, int i) {
+		int r = curNode->left->size + 1;
+		if (i == r)
+			return curNode;
+		else if (i < r)
+			return select(curNode->left, i);
+		else
+			return select(curNode->right, i - r);
+	}
+	int rank(node<T>* findNode) {
+		int r = findNode->left->size + 1;
+		node<T>* curNode = findNode;
+		while (curNode != root) {
+			if (curNode == curNode->parent->right)
+				r = r + curNode->parent->left->size + 1;
+			curNode = curNode->parent;
+		}
+		return r;
 	}
 private:
 	node<T>* nil;
@@ -166,6 +192,8 @@ private:
 			x->parent->right = y;
 		y->left = x;
 		x->parent = y;
+		y->size = x->size;
+		x->size = x->left->size + x->right->size + 1;
 	}
 	void rotateRight(node<T>* x) {
 		node<T>* y = x->left;
@@ -181,6 +209,8 @@ private:
 			x->parent->right = y;
 		y->right = x;
 		x->parent = y;
+		y->size = x->size;
+		x->size = x->left->size + x->right->size + 1;
 	}
 	void transplant(node<T>* u, node<T>* v) {
 		if (u->parent == nil)
