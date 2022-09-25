@@ -2,16 +2,15 @@
 #include <string>
 using namespace std;
 
-unsigned long hashFunction(string str, int l) {
-	unsigned long r = 31;
-	unsigned long M = 1234567891;
-	unsigned long value = 0;
+unsigned int hashFunction(string str, int l) {
+	unsigned int r = 31;
+	unsigned int M = 1234567891;
+	unsigned long long value = 0;
 	for (int i = 0; i < l; i++) {
-		unsigned long var = str[i] - 'a' + 1;
+		unsigned long long var = str[i] - 'a' + 1;
 		for (int j = 0; j < i; j++)
-			var = (var * r) % M;
+			var = var * r % M;
 		value = (value + var) % M;
-		cout << value << "\n";
 	}
 	return value;
 }
