@@ -30,12 +30,3 @@
 *.exe
 *.out
 *.app
-/.vs/Baekjoon/v17
-/Baekjoon
-/.vs/Baekjoon/FileContentIndex
-/x64/Debug
-/.vs
-/B
-/BOJ
-/in.txt
-/NowSolving
