@@ -1,46 +1,26 @@
 #include <iostream>
 #include <iomanip>
-#include <vector>
+#include <algorithm>
 using namespace std;
 
-float getAve(int* score, int size) {
-	float sum = 0;
-	for (int i = 0; i < size; i++) {
-		sum += score[i];
-	}
-	return sum / size;
-}
+int arr[1000];
 
 int main() {
 	int c;
 	cin >> c;
-
-	vector<int> students;
-	vector<int*> scores;
-
-	for (int i = 0; i < c; i++) {
-		int n;
-		cin >> n;
-		cin.ignore(1, ' ');
-		students.push_back(n);
-		
-		int* score = new int[n];
-		for (int j = 0; j < n; j++) {
-			cin >> score[j];
-			cin.ignore(1, ' ');
-		}
-		scores.push_back(score);
-	}
-
-	for (int i = 0; i < c; i++) {
-		float ave = getAve(scores[i], students[i]);
-
-		float upAveStudents = 0;
-		for (int j = 0; j < students[i]; j++) {
-			if (scores[i][j] > ave)
-				upAveStudents++;
-		}
-
-		cout << fixed << setprecision(3) << upAveStudents / students[i] * 100 << "%\n";
-	}
+    while (c--) {
+        int n;
+        cin >> n;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            cin >> arr[i];
+            sum += arr[i];
+        }
+        double avg = (double)sum / n;
+        sort(arr, arr + n);
+        int idx = upper_bound(arr, arr + n, avg) - arr;
+        int cnt = n - idx;
+        double ratio = (double)cnt / n * 100;
+        cout << fixed << setprecision(3) << ratio << "%\n";
+    }
 }

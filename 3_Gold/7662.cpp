@@ -1,6 +1,6 @@
 #include <iostream>
 #include <queue>
-#include <set>
+#include <map>
 #include <string>
 
 using namespace std;
@@ -15,9 +15,9 @@ int main() {
     while (t--) {
         priority_queue<int, vector<int>, less<>> max_heap;
         priority_queue<int, vector<int>, greater<>> min_heap;
-        multiset<int, greater<>> max_removes;
-        multiset<int, less<>> min_removes;
-        int num_inserts = 0;
+        map<int, int> removes_max;
+        map<int, int> removes_min;
+        int size = 0;
 
         int k;
         cin >> k;
@@ -29,9 +29,9 @@ int main() {
             if (op == "I") {
                 max_heap.push(num);
                 min_heap.push(num);
-                num_inserts++;
+                size++;
             } else {
-                if (!num_inserts) {
+                if (!size) {
                     continue;
                 }
                 int delVal;
@@ -40,27 +40,32 @@ int main() {
                 } else {
                     delVal = min_heap.top();
                 }
-                max_removes.insert(delVal);
-                min_removes.insert(delVal);
-                num_inserts--;
-                while (!max_heap.empty() && max_heap.top() == *max_removes.begin()) {
+                removes_max[delVal]++;
+                removes_min[delVal]++;
+                size--;
+
+                while (!max_heap.empty() && removes_max[max_heap.top()] > 0) {
+                    int top = max_heap.top();
                     max_heap.pop();
-                    max_removes.erase(max_removes.begin());
+                    removes_max[top]--;
                 }
-                while (!min_heap.empty() && min_heap.top() == *min_removes.begin()) {
+                while (!min_heap.empty() && removes_min[min_heap.top()] > 0) {
+                    int top = min_heap.top();
                     min_heap.pop();
-                    min_removes.erase(min_removes.begin());
+                    removes_min[top]--;
                 }
             }
         }
 
-        while (!max_heap.empty() && max_heap.top() == *max_removes.begin()) {
+        while (!max_heap.empty() && removes_max[max_heap.top()] > 0) {
+            int top = max_heap.top();
             max_heap.pop();
-            max_removes.erase(max_removes.begin());
+            removes_max[top]--;
         }
-        while (!min_heap.empty() && min_heap.top() == *min_removes.begin()) {
+        while (!min_heap.empty() && removes_min[min_heap.top()] > 0) {
+            int top = min_heap.top();
             min_heap.pop();
-            min_removes.erase(min_removes.begin());
+            removes_min[top]--;
         }
 
         if (max_heap.empty()) {
