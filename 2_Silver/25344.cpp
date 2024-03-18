@@ -9,11 +9,9 @@ int main() {
 
   int n;
   cin >> n;
-  unsigned long long l;
-  cin >> l;
-  n--;
+  int l = 1;
   while (n--) {
-    unsigned long long num;
+    int num;
     cin >> num;
     l = lcm(l, num);
   }
