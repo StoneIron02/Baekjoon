@@ -1,131 +1,178 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <queue>
-using namespace std;
+#include <unordered_map>
 
 namespace AhoCorasick {
-const int ALPHABET_SIZE = 26;
-struct node {
-  node *go[ALPHABET_SIZE]{};
-  node *fail;
-  vector<int> output;
+template <typename T> struct node {
+  std::unordered_map<T, node *> go;
+  node<T> *fail;
+  std::vector<size_t> output;
 
-  node() {
-    for (auto &i : go) {
-      i = nullptr;
-    }
-    fail = nullptr;
-  }
+  node() { fail = nullptr; }
 
   ~node() {
-    for (auto &i : go) {
-      delete i;
+    for (auto &[ch, child] : go) {
+      delete child;
     }
+  }
+
+  node<T> *find(const T &key) {
+    if (go.find(key) != go.end()) {
+      return go[key];
+    }
+    return nullptr;
   }
 };
 
+template <typename T>
 class AhoCorasick {
 private:
-  node *root;
-  vector<string> patterns;
+  node<T> *root;
+  std::vector<std::vector<T>> patterns;
 
 public:
-  AhoCorasick() : root(new node()) {}
+  AhoCorasick() { root = new node<T>(); }
   ~AhoCorasick() { delete root; }
 
-  void insertPattern(const string &pattern, int patternIndex) {
-    node *current = root;
-    for (char ch : pattern) {
-      int index = ch - 'a';
-      if (!current->go[index]) {
-        current->go[index] = new node();
+  /**
+   * Insert the pattern in Aho-Corasick trie.
+   * @param pattern
+   * @param representative_pattern representative_pattern of oppm_node
+   */
+  void insert(const std::vector<T> &pattern, size_t representative_pattern) {
+    node<T> *current = root;
+    for (const T &ch : pattern) {
+      if (!current->find(ch)) {
+        current->go[ch] = new node<T>();
       }
-      current = current->go[index];
+      current = current->find(ch);
     }
-    current->output.push_back(patternIndex);
+    current->output.push_back(representative_pattern);
     patterns.push_back(pattern);
   }
 
-  void buildFailureFunction() {
-    queue<node *> q;
+  /**
+   * Construct the trie with given patterns.
+   * @param pattern_set
+   */
+  void construct(const std::vector<std::vector<T>> &pattern_set) {
+    size_t representative_pattern = 0;
+    for (const auto &pattern : pattern_set) {
+      insert(pattern, representative_pattern);
+      ++representative_pattern;
+    }
+  }
+
+  /**
+   * Construct the trie with given patterns for string.
+   * @param pattern_set
+   */
+  void construct(const std::vector<std::string> &pattern_set) {
+    size_t representative_pattern = 0;
+    for (const auto &pattern : pattern_set) {
+      insert(std::vector<char>(pattern.begin(), pattern.end()), representative_pattern);
+      ++representative_pattern;
+    }
+  }
+
+  /**
+   * Compute the KMP failure function.
+   */
+  void build_failure_function() {
+    std::queue<node<T> *> que;
     root->fail = root;
-    q.push(root);
 
-    while (!q.empty()) {
-      node *current = q.front();
-      q.pop();
+    for (const auto &[ch, child] : root->go) {
+      que.push(child);
+      child->fail = root;
+    }
 
-      for (int i = 0; i < ALPHABET_SIZE; ++i) {
-        node *child = current->go[i];
-        if (!child) continue;
+    while (!que.empty()) {
+      node<T> *current = que.front();
+      que.pop();
 
-        if (current == root) {
-          child->fail = root;
-        } else {
-          node *failure = current->fail;
-
-          while (failure != root && !failure->go[i]) {
-            failure = failure->fail;
-          }
-
-          if (failure->go[i]) {
-            failure = failure->go[i];
-          }
-          child->fail = failure;
+      for (const auto &[ch, child] : current->go) {
+        node<T> *failure = current->fail;
+        while (failure != root && !failure->find(ch)) {
+          failure = failure->fail;
         }
 
-        for (auto& index : child->fail->output) {
+        if (failure->find(ch)) {
+          failure = failure->find(ch);
+        }
+        child->fail = failure;
+
+        for (auto &index : child->fail->output) {
           child->output.push_back(index);
         }
-        q.push(child);
+        que.push(child);
       }
     }
   }
 
-  bool search(const string &text) {
-    node *current = root;
+  /**
+   * A searcher that implements the Aho-Corasick algorithm.
+   * @param text
+   * @return
+   */
+  std::vector<std::pair<size_t, size_t>> search(const std::vector<T> &text) {
+    std::vector<std::pair<size_t, size_t>> result;
 
-    for (int i = 0; i < text.length(); ++i) {
-      int index = text[i] - 'a';
-
-      while (current != root && !current->go[index]) {
+    node<T> *current = root;
+    for (int i = 0; i < text.size(); ++i) {
+      while (current != root && !current->find(text[i])) {
         current = current->fail;
       }
 
-      if (current->go[index]) {
-        current = current->go[index];
+      if (current->find(text[i])) {
+        current = current->find(text[i]);
       }
 
-      if (!current->output.empty()) {
-        return true;
+      for (auto &state : current->output) {
+        result.emplace_back(i - patterns[state].size() + 1, state);
       }
     }
-    return false;
+
+    return result;
   }
+
+  /**
+   * A searcher that implements the Aho-Corasick algorithm for string.
+   * @param text
+   * @return
+   */
+  std::vector<std::pair<size_t, size_t>> search(const std::string &text) {
+    return search(std::vector<char>(text.begin(), text.end()));
+  }
+
 };
 } // namespace AhoCorasick
+
+using namespace std;
 
 int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ios_base::sync_with_stdio(false);
 
-  AhoCorasick::AhoCorasick ac;
+  AhoCorasick::AhoCorasick<char> ac;
 
   int n;
   cin >> n;
   for (int i = 0; i < n; i++) {
     string str;
     cin >> str;
-    ac.insertPattern(str, i);
+    ac.insert(vector<char>(str.begin(), str.end()), i);
   }
-  ac.buildFailureFunction();
+  ac.build_failure_function();
 
   int q;
   cin >> q;
   for (int i = 0; i < q; i++) {
     string str;
     cin >> str;
-    cout << (ac.search(str) ? "YES\n" : "NO\n");
+    cout << (!ac.search(str).empty() ? "YES\n" : "NO\n");
   }
 }
